@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { useData } from "../../contexts/DataContext";
 import { getMonth } from "../../helpers/Date";
 
@@ -10,7 +10,9 @@ const Slider = () => {
   const byDateDesc = data?.focus.sort((evtA, evtB) =>
     new Date(evtA.date) < new Date(evtB.date) ? -1 : 1
   );
+
   const nextCard = () => {
+    if (!byDateDesc) return;
     setTimeout(
       () => setIndex(index < byDateDesc.length - 1 ? index + 1 : 0),
       5000
@@ -19,12 +21,13 @@ const Slider = () => {
   useEffect(() => {
     nextCard();
   });
+
+  if (!byDateDesc) return null;
   return (
     <div className="SlideCardList">
       {byDateDesc?.map((event, idx) => (
-        <>
+         <div key={event.id || idx}>
           <div
-            key={event.title}
             className={`SlideCard SlideCard--${
               index === idx ? "display" : "hide"
             }`}
@@ -38,22 +41,25 @@ const Slider = () => {
               </div>
             </div>
           </div>
-          <div className="SlideCard__paginationContainer">
+          
+        </div>
+      ))}
+      <div className="SlideCard__paginationContainer">
             <div className="SlideCard__pagination">
-              {byDateDesc.map((_, radioIdx) => (
+              {byDateDesc?.map((event, radioIdx) => (
                 <input
-                  key={`${event.id}`}
+                  key={event.id || `radio-${radioIdx}`}
                   type="radio"
                   name="radio-button"
-                  checked={idx === radioIdx}
+                  checked={index === radioIdx}
+                  readOnly
                 />
               ))}
             </div>
           </div>
-        </>
-      ))}
     </div>
   );
 };
 
-export default Slider;
+export default Slider; 
+
